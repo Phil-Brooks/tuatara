@@ -1,11 +1,29 @@
 use std::{
-    //fmt::{self, Display},
+    fmt::{Display},
     //mem::size_of,
     ops::{Index, IndexMut},
     //str::FromStr,
 };
 
 use crate::bitboard::BitBoard;
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[repr(u8)]
+pub enum Colour {
+    White,
+    Black,
+}
+
+const _COLOUR_ASSERT: () = assert!(size_of::<Colour>() == size_of::<Option<Colour>>());
+
+impl Display for Colour {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            Self::White => write!(f, "White"),
+            Self::Black => write!(f, "Black"),
+        }
+    }
+}
 
 #[derive(PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Hash, Debug)]
 #[repr(u8)]
@@ -171,15 +189,74 @@ impl Square {
         // SAFETY: Rank and File are constrained such that inner is always < 64.
         unsafe { std::mem::transmute(inner) }
     }
-
-    pub const fn index(self) -> usize {
-        self as usize
+    pub const fn new(inner: u8) -> Option<Self> {
+        if inner < 64 {
+            // SAFETY: inner is less than 64, so it corresponds to a valid enum variant.
+            Some(unsafe { std::mem::transmute::<u8, Self>(inner) })
+        } else {
+            None
+        }
     }
-    /// SAFETY: you may only call this function with value of `inner` less than 64.
+    pub const fn new_clamped(inner: u8) -> Self {
+        let inner = if inner < 63 { inner } else { 63 };
+        let maybe_square = Self::new(inner);
+        if let Some(sq) = maybe_square {
+            sq
+        } else {
+            panic!()
+        }
+    }
     pub const unsafe fn new_unchecked(inner: u8) -> Self {
         debug_assert!(inner < 64);
         unsafe { std::mem::transmute(inner) }
     }
+    pub const fn flip_rank(self) -> Self {
+        // SAFETY: given the precondition that `self as u8` is less than 64,
+        // this operation cannot construct a value >= 64.
+        unsafe { std::mem::transmute(self as u8 ^ 0b111_000) }
+    }
+    pub const fn flip_file(self) -> Self {
+        // SAFETY: given the precondition that `self as u8` is less than 64,
+        // this operation cannot construct a value >= 64.
+        unsafe { std::mem::transmute(self as u8 ^ 0b000_111) }
+    }
+    pub const fn relative_to(self, side: Colour) -> Self {
+        if matches!(side, Colour::White) {
+            self
+        } else {
+            self.flip_rank()
+        }
+    }
+    pub const fn file(self) -> File {
+        // SAFETY: `self as u8` is less than 64, and this operation can only
+        // decrease the value, so cannot construct a value >= 64.
+        unsafe { std::mem::transmute(self as u8 % 8) }
+    }
+    pub const fn rank(self) -> Rank {
+        // SAFETY: `self as u8` is less than 64, and this operation can only
+        // decrease the value, so cannot construct a value >= 64.
+        unsafe { std::mem::transmute(self as u8 / 8) }
+    }
+    pub const fn distance(a: Self, b: Self) -> u8 {
+        let file_diff = a.file().abs_diff(b.file());
+        let rank_diff = a.rank().abs_diff(b.rank());
+        if file_diff > rank_diff { file_diff } else { rank_diff }
+    }
+    pub const fn signed_inner(self) -> i8 {
+        //#![allow(clippy::cast_possible_wrap)]
+        self as i8
+    }
+    pub const fn index(self) -> usize {
+        self as usize
+    }
+
+
+
+
+
+
+
+
     pub const fn as_bb(self) -> BitBoard {
         BitBoard(1u64 << self.index())
     }
