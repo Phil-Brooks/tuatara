@@ -5,6 +5,8 @@ use std::{
     //str::FromStr,
 };
 
+use crate::bitboard::BitBoard;
+
 #[rustfmt::skip]
 #[derive(PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Hash, Debug, Default)]
 #[repr(u8)]
@@ -38,5 +40,8 @@ impl Square {
     pub const unsafe fn new_unchecked(inner: u8) -> Self {
         debug_assert!(inner < 64);
         unsafe { std::mem::transmute(inner) }
+    }
+    pub const fn as_set(self) -> BitBoard {
+        BitBoard(1u64 << self.index())
     }
 }

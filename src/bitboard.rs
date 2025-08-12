@@ -1,5 +1,5 @@
 use std::{
-    fmt::{Display, Write,},
+    fmt::{Display, Write},
     ops::{
         BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, Shr, Sub,
         SubAssign,
@@ -34,12 +34,24 @@ impl BitBoard {
     pub const LIGHT_SQUARES: Self = Self(0x55AA_55AA_55AA_55AA);
     pub const DARK_SQUARES: Self = Self(0xAA55_AA55_AA55_AA55);
     pub const RANKS: [Self; 8] = [
-        Self::RANK_1, Self::RANK_2, Self::RANK_3, Self::RANK_4,
-        Self::RANK_5, Self::RANK_6, Self::RANK_7, Self::RANK_8,
+        Self::RANK_1,
+        Self::RANK_2,
+        Self::RANK_3,
+        Self::RANK_4,
+        Self::RANK_5,
+        Self::RANK_6,
+        Self::RANK_7,
+        Self::RANK_8,
     ];
     pub const FILES: [Self; 8] = [
-        Self::FILE_A, Self::FILE_B, Self::FILE_C, Self::FILE_D,
-        Self::FILE_E, Self::FILE_F, Self::FILE_G, Self::FILE_H,
+        Self::FILE_A,
+        Self::FILE_B,
+        Self::FILE_C,
+        Self::FILE_D,
+        Self::FILE_E,
+        Self::FILE_F,
+        Self::FILE_G,
+        Self::FILE_H,
     ];
     pub const fn count(self) -> u32 {
         self.0.count_ones()
@@ -115,17 +127,17 @@ impl BitBoard {
     pub fn south_one(self) -> Self {
         self >> 8
     }
-
-
-
-    pub fn is_empty(&self) -> bool {
-        self.0 == 0
+    pub fn isolate_lsb(self) -> Self {
+        self & (Self(0u64.wrapping_sub(self.0)))
     }
-    pub fn any(self) -> bool {
-        self.0 != 0
+    pub fn without_lsb(self) -> Self {
+        self & Self(self.0.wrapping_sub(1))
     }
-    pub fn empty() -> Self {
-        Self(0)
+    pub fn one(self) -> bool {
+        self != Self::EMPTY && self.without_lsb() == Self::EMPTY
+    }
+    pub fn many(self) -> bool {
+        self.without_lsb() != Self::EMPTY
     }
 }
 
@@ -157,6 +169,18 @@ impl Iterator for SquareIter {
     }
 }
 
+impl BitOr for BitBoard {
+    type Output = Self;
+
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Self(self.0 | rhs.0)
+    }
+}
+impl BitOrAssign for BitBoard {
+    fn bitor_assign(&mut self, rhs: Self) {
+        self.0 |= rhs.0;
+    }
+}
 impl BitAnd for BitBoard {
     type Output = Self;
 
@@ -164,8 +188,35 @@ impl BitAnd for BitBoard {
         Self(self.0 & rhs.0)
     }
 }
+impl BitAndAssign for BitBoard {
+    fn bitand_assign(&mut self, rhs: Self) {
+        self.0 &= rhs.0;
+    }
+}
+impl BitXor for BitBoard {
+    type Output = Self;
 
+    fn bitxor(self, rhs: Self) -> Self::Output {
+        Self(self.0 ^ rhs.0)
+    }
+}
+impl BitXorAssign for BitBoard {
+    fn bitxor_assign(&mut self, rhs: Self) {
+        self.0 ^= rhs.0;
+    }
+}
+impl Sub for BitBoard {
+    type Output = Self;
 
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self(self.0 & !rhs.0)
+    }
+}
+impl SubAssign for BitBoard {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.0 &= !rhs.0;
+    }
+}
 impl Not for BitBoard {
     type Output = Self;
 
@@ -187,7 +238,6 @@ impl Shl<u8> for BitBoard {
         Self(self.0 << rhs)
     }
 }
-
 impl Display for BitBoard {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         const LAST_BIT: u64 = 63;
@@ -201,33 +251,32 @@ impl Display for BitBoard {
         }
         Ok(())
     }
-}    
-
+}
 
 #[cfg(test)]
 mod tests {
-    use crate::BitBoard;
+    use crate::{bitboard::BitBoard, types::Square};
     #[test]
     fn to_string() {
         let bbstr = BitBoard(1).to_string();
         let bbstrlen = bbstr.len();
         assert_eq!(bbstrlen, 136);
-        assert_eq!(bbstr.starts_with("0 0 0 0 0 0 0 0 \n"),true);
+        assert_eq!(bbstr.starts_with("0 0 0 0 0 0 0 0 \n"), true);
         assert_eq!(bbstr.ends_with("1 0 0 0 0 0 0 0 \n"), true);
     }
     #[test]
     fn empty() {
-        let empty = BitBoard::empty();
+        let empty = BitBoard::EMPTY;
         assert_eq!(empty, BitBoard(0));
-        assert!(empty.is_empty());
-        assert!(!empty.any());
+        assert!(!empty.one());
+        assert!(!empty.many());
     }
     #[test]
     fn full() {
         let full = BitBoard::FULL;
         assert_eq!(full, BitBoard(18446744073709551615));
-        assert!(!full.is_empty());
-        assert!(full.any());
+        assert!(!full.one());
+        assert!(full.many());
     }
     #[test]
     fn north_east_one() {
@@ -337,5 +386,29 @@ mod tests {
         ne_bb = bb.south_one();
         assert_eq!(ne_bb, BitBoard::EMPTY);
     }
+    #[test]
+    fn isolate_lsb() {
+        let bb = BitBoard::FILE_A;
+        let isolated = bb.isolate_lsb();
+        assert_eq!(isolated, BitBoard::from_square(crate::types::Square::A1));
+    }
+    #[test]
+    fn without_lsb() {
+        let bb = BitBoard::from_square(crate::types::Square::A2)
+            | BitBoard::from_square(crate::types::Square::A3);
+        let without_lsb = bb.without_lsb();
+        assert_eq!(without_lsb, BitBoard::from_square(crate::types::Square::A3));
+    }
+    #[test]
+    fn add_square() {
+        let one = Square::E4.as_set();
+        assert_ne!(one, BitBoard::EMPTY);
+        assert!(one.one());
+        assert!(!one.many());
 
+        let two = one.add_square(Square::E5);
+        assert_ne!(two, BitBoard::EMPTY);
+        assert!(!two.one());
+        assert!(two.many());
+    }
 }
