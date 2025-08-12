@@ -401,7 +401,7 @@ mod tests {
     }
     #[test]
     fn add_square() {
-        let one = Square::E4.as_set();
+        let one = Square::E4.as_bb();
         assert_ne!(one, BitBoard::EMPTY);
         assert!(one.one());
         assert!(!one.many());

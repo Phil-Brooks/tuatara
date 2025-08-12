@@ -1,5 +1,5 @@
-pub mod types;
 pub mod bitboard;
+pub mod types;
 
 use crate::bitboard::BitBoard;
 
@@ -12,4 +12,4 @@ fn main() {
     println!("bb2str:\n{}", bb2str);
     bb = BitBoard(3);
     println!("bb3:\n{}", bb);
-    }
+}
