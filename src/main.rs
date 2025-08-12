@@ -1,18 +1,15 @@
-fn print_bitboard(bitboard: u64) {
-    const LAST_BIT: u64 = 63;
-    for rank in 0..8 {
-        for file in (0..8).rev() {
-            let mask = 1u64 << (LAST_BIT - (rank * 8) - file);
-            let char = if bitboard & mask != 0 { '1' } else { '0' };
-            print!("{char} ");
-        }
-        println!();
-    }
-}
+pub mod types;
+pub mod bitboard;
+
+use crate::bitboard::BitBoard;
+
 fn main() {
-    print_bitboard(1);
-    println!();
-    print_bitboard(2);
-    println!();
-    print_bitboard(3);
-}
+    let mut bb = BitBoard(1);
+    println!("bb1:\n{}", bb);
+    bb = BitBoard(2);
+    let bb2str = bb.to_string();
+    println!("bb2:\n{}", bb);
+    println!("bb2str:\n{}", bb2str);
+    bb = BitBoard(3);
+    println!("bb3:\n{}", bb);
+    }
