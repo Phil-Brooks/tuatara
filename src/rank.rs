@@ -85,4 +85,10 @@ mod tests {
             ]
         );
     }
+    #[test]
+    fn with() {
+        assert_eq!(Rank::One.with(File::A), Square::A1);
+        assert_eq!(Rank::Eight.with(File::H), Square::H8);
+        assert_eq!(Rank::Four.with(File::D), Square::D4);
+    }
 }

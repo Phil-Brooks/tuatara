@@ -42,3 +42,70 @@ impl<T> IndexMut<File> for [T; 8] {
         unsafe { self.get_unchecked_mut(index as usize) }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::consts::*;
+    #[test]
+    fn abs_diff() {
+        assert_eq!(File::A.abs_diff(File::H), 7);
+        assert_eq!(File::H.abs_diff(File::A), 7);
+        assert_eq!(File::A.abs_diff(File::A), 0);
+        assert_eq!(File::H.abs_diff(File::H), 0);
+    }
+    #[test]
+    fn from_index() {
+        assert_eq!(File::from_index(0), Some(File::A));
+        assert_eq!(File::from_index(1), Some(File::B));
+        assert_eq!(File::from_index(2), Some(File::C));
+        assert_eq!(File::from_index(3), Some(File::D));
+        assert_eq!(File::from_index(4), Some(File::E));
+        assert_eq!(File::from_index(5), Some(File::F));
+        assert_eq!(File::from_index(6), Some(File::G));
+        assert_eq!(File::from_index(7), Some(File::H));
+        assert_eq!(File::from_index(8), None);
+    }
+    #[test]
+    fn add() {
+        assert_eq!(File::A.add(0), Some(File::A));
+        assert_eq!(File::A.add(1), Some(File::B));
+        assert_eq!(File::H.add(0), Some(File::H));
+        assert_eq!(File::H.add(1), None);
+        assert_eq!(File::A.add(7), Some(File::H));
+        assert_eq!(File::H.add(7), None);
+    }
+    #[test]
+    fn sub() {
+        assert_eq!(File::A.sub(0), Some(File::A));
+        assert_eq!(File::B.sub(1), Some(File::A));
+        assert_eq!(File::H.sub(0), Some(File::H));
+        assert_eq!(File::H.sub(1), Some(File::G));
+        assert_eq!(File::A.sub(1), None);
+        assert_eq!(File::H.sub(7), Some(File::A));
+        assert_eq!(File::A.sub(7), None);
+    }
+    #[test]
+    fn all() {
+        let mut files = File::all();
+        assert_eq!(files.next(), Some(File::A));
+        assert_eq!(files.next(), Some(File::B));
+        assert_eq!(files.next(), Some(File::C));
+        assert_eq!(files.next(), Some(File::D));
+        assert_eq!(files.next(), Some(File::E));
+        assert_eq!(files.next(), Some(File::F));
+        assert_eq!(files.next(), Some(File::G));
+        assert_eq!(files.next(), Some(File::H));
+        assert_eq!(files.next(), None);
+    }
+    #[test]
+    fn with() {
+        assert_eq!(File::A.with(Rank::One), Square::A1);
+        assert_eq!(File::B.with(Rank::Two), Square::B2);
+        assert_eq!(File::C.with(Rank::Three), Square::C3);
+        assert_eq!(File::D.with(Rank::Four), Square::D4);
+        assert_eq!(File::E.with(Rank::Five), Square::E5);
+        assert_eq!(File::F.with(Rank::Six), Square::F6);
+        assert_eq!(File::G.with(Rank::Seven), Square::G7);
+        assert_eq!(File::H.with(Rank::Eight), Square::H8);
+    }
+}
