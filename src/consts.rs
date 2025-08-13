@@ -2,6 +2,7 @@ const _COLOUR_ASSERT: () = assert!(size_of::<Colour>() == size_of::<Option<Colou
 const _FILE_ASSERT: () = assert!(size_of::<File>() == size_of::<Option<File>>());
 const _RANK_ASSERT: () = assert!(size_of::<Rank>() == size_of::<Option<Rank>>());
 const _SQUARE_ASSERT: () = assert!(size_of::<Square>() == size_of::<Option<Square>>());
+const _PIECE_TYPE_ASSERT: () = assert!(size_of::<PieceType>() == size_of::<Option<PieceType>>());
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u8)]
@@ -81,6 +82,16 @@ pub const RANKS: [BitBoard; 8] = [
 pub const FILES: [BitBoard; 8] = [
     BB_FILE_A, BB_FILE_B, BB_FILE_C, BB_FILE_D, BB_FILE_E, BB_FILE_F, BB_FILE_G, BB_FILE_H,
 ];
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[repr(u8)]
+pub enum PieceType {
+    Pawn,
+    Knight,
+    Bishop,
+    Rook,
+    Queen,
+    King,
+}
 
 #[cfg(test)]
 mod tests {
@@ -92,9 +103,18 @@ mod tests {
         assert_eq!(BB_RANK_1, 0x0000_0000_0000_00FF);
         assert_eq!(BB_FILE_A, 0x0101_0101_0101_0101);
     }
-   #[test]
+    #[test]
     fn square_names() {
         assert_eq!(SQUARE_NAMES[0], "a1");
         assert_eq!(SQUARE_NAMES[63], "h8");
+    }
+    #[test]
+    fn piece_type_constants() {
+        assert_eq!(PieceType::Pawn as u8, 0);
+        assert_eq!(PieceType::Knight as u8, 1);
+        assert_eq!(PieceType::Bishop as u8, 2);
+        assert_eq!(PieceType::Rook as u8, 3);
+        assert_eq!(PieceType::Queen as u8, 4);
+        assert_eq!(PieceType::King as u8, 5);
     }
 }
