@@ -81,3 +81,20 @@ pub const RANKS: [BitBoard; 8] = [
 pub const FILES: [BitBoard; 8] = [
     BB_FILE_A, BB_FILE_B, BB_FILE_C, BB_FILE_D, BB_FILE_E, BB_FILE_F, BB_FILE_G, BB_FILE_H,
 ];
+
+#[cfg(test)]
+mod tests {
+    use crate::consts::*;
+    #[test]
+    fn bitboard_constants() {
+        assert_eq!(BB_EMPTY, 0);
+        assert_eq!(BB_FULL, !0);
+        assert_eq!(BB_RANK_1, 0x0000_0000_0000_00FF);
+        assert_eq!(BB_FILE_A, 0x0101_0101_0101_0101);
+    }
+   #[test]
+    fn square_names() {
+        assert_eq!(SQUARE_NAMES[0], "a1");
+        assert_eq!(SQUARE_NAMES[63], "h8");
+    }
+}
