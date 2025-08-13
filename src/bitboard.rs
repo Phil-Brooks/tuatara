@@ -3,14 +3,6 @@ use std::fmt::Write;
 use crate::consts::*;
 use crate::square::Square;
 
-pub type BitBoard = u64;
-
-pub const fn count(bb: BitBoard) -> u32 {
-    bb.count_ones()
-}
-pub const fn intersection(bb: BitBoard, other: BitBoard) -> BitBoard {
-    bb & other
-}
 pub const fn contains(bb: BitBoard, other: BitBoard) -> bool {
     (bb & other) == other
 }
@@ -18,32 +10,21 @@ pub const fn contains_square(bb: BitBoard, square: Square) -> bool {
     let mask = 1u64 << square.index();
     (bb & mask) != 0
 }
-pub const fn union(bb: BitBoard, other: BitBoard) -> BitBoard {
-    bb | other
-}
 pub const fn add_square(bb: BitBoard, square: Square) -> BitBoard {
     let mask = 1u64 << square.index();
     bb | mask
-}
-pub const fn remove(bb: BitBoard, other: BitBoard) -> BitBoard {
-    bb & !other
 }
 pub const fn remove_square(bb: BitBoard, square: Square) -> BitBoard {
     let mask = !(1u64 << square.index());
     bb & mask
 }
-pub const fn toggle(bb: BitBoard, other: BitBoard) -> BitBoard {
-    bb ^ other
-}
 pub const fn toggle_square(bb: BitBoard, square: Square) -> BitBoard {
     let mask = 1u64 << square.index();
     bb ^ mask
 }
-//#[allow(clippy::missing_const_for_fn)]
 pub fn iter(bb: BitBoard) -> SquareIter {
     SquareIter::new(bb)
 }
-//#[allow(clippy::cast_possible_truncation)]
 pub const fn first(bb: BitBoard) -> Square {
     if bb == 0 {
         return Square::A1; // or any default square
@@ -108,13 +89,11 @@ pub fn to_string(bb: BitBoard) -> String {
 // Iterator over the squares of a square-set.
 // The squares are returned in increasing order.
 pub struct SquareIter(u64);
-
 impl SquareIter {
     pub const fn new(value: u64) -> Self {
         Self(value)
     }
 }
-
 impl Iterator for SquareIter {
     type Item = Square;
 
@@ -289,5 +268,15 @@ mod tests {
         assert_ne!(two, BB_EMPTY);
         assert!(!bitboard::one(two));
         assert!(bitboard::many(two));
+    }
+    #[test]
+    fn iter() {
+        let bb = BB_FILE_A;
+        let mut bb_it = bitboard::iter(bb);
+        assert_eq!(bb_it.next(), Some(Square::A1));
+        assert_eq!(bb_it.next(), Some(Square::A2));
+        bb_it = bitboard::iter(BB_FILE_B);
+        let bstr = bb_it.map(|s| SQUARE_NAMES[s.index()]).collect::<Vec<_>>();
+        assert_eq!(bstr, vec!["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"]);
     }
 }

@@ -4,7 +4,7 @@ use std::{
     //str::FromStr,
 };
 
-use crate::bitboard::BitBoard;
+use crate::consts::BitBoard;
 use crate::colour::Colour;
 use crate::file::File;
 use crate::rank::Rank;

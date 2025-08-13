@@ -5,7 +5,7 @@ pub mod file;
 pub mod rank;
 pub mod square;
 
-use crate::bitboard::BitBoard;
+use crate::consts::BitBoard;
 
 fn main() {
     let mut bb:BitBoard = 1;
