@@ -42,3 +42,47 @@ impl<T> IndexMut<Rank> for [T; 8] {
         unsafe { self.get_unchecked_mut(index as usize) }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::consts::*;
+    #[test]
+    fn abs_diff() {
+        assert_eq!(Rank::One.abs_diff(Rank::Three), 2);
+        assert_eq!(Rank::Eight.abs_diff(Rank::Five), 3);
+        assert_eq!(Rank::Four.abs_diff(Rank::Four), 0);
+    }
+    #[test]
+    fn from_index() {
+        assert_eq!(Rank::from_index(0), Some(Rank::One));
+        assert_eq!(Rank::from_index(7), Some(Rank::Eight));
+        assert_eq!(Rank::from_index(8), None);
+    }
+    #[test]
+    fn add() {
+        assert_eq!(Rank::One.add(2), Some(Rank::Three));
+        assert_eq!(Rank::Eight.add(1), None);
+    }
+    #[test]
+    fn sub() {
+        assert_eq!(Rank::Three.sub(2), Some(Rank::One));
+        assert_eq!(Rank::One.sub(1), None);
+    }
+    #[test]
+    fn all() {
+        let ranks: Vec<Rank> = Rank::all().collect();
+        assert_eq!(
+            ranks,
+            vec![
+                Rank::One,
+                Rank::Two,
+                Rank::Three,
+                Rank::Four,
+                Rank::Five,
+                Rank::Six,
+                Rank::Seven,
+                Rank::Eight
+            ]
+        );
+    }
+}
