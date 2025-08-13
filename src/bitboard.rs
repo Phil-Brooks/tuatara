@@ -1,7 +1,6 @@
 use std::fmt::Write;
 
 use crate::consts::*;
-use crate::square::Square;
 
 pub const fn contains(bb: BitBoard, other: BitBoard) -> bool {
     (bb & other) == other
@@ -114,7 +113,7 @@ impl Iterator for SquareIter {
 
 #[cfg(test)]
 mod tests {
-    use crate::{bitboard, bitboard::BitBoard, consts::*, square::Square};
+    use crate::{bitboard, bitboard::BitBoard, consts::*};
     #[test]
     fn to_string() {
         let bbstr = bitboard::to_string(1);
@@ -264,7 +263,7 @@ mod tests {
         assert!(bitboard::one(one));
         assert!(!bitboard::many(one));
 
-        let two = bitboard::add_square(one,Square::E5);
+        let two = bitboard::add_square(one, Square::E5);
         assert_ne!(two, BB_EMPTY);
         assert!(!bitboard::one(two));
         assert!(bitboard::many(two));

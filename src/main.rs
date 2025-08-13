@@ -8,7 +8,7 @@ pub mod square;
 use crate::consts::BitBoard;
 
 fn main() {
-    let mut bb:BitBoard = 1;
+    let mut bb: BitBoard = 1;
     println!("bb1:\n{}", bitboard::to_string(bb));
     bb = 2;
     let bb2str = bitboard::to_string(bb);

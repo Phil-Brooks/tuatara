@@ -1,12 +1,52 @@
-use crate::colour::Colour;
-use crate::file::File;
-use crate::rank::Rank;
-use crate::square::Square;
-
 const _COLOUR_ASSERT: () = assert!(size_of::<Colour>() == size_of::<Option<Colour>>());
 const _FILE_ASSERT: () = assert!(size_of::<File>() == size_of::<Option<File>>());
 const _RANK_ASSERT: () = assert!(size_of::<Rank>() == size_of::<Option<Rank>>());
 const _SQUARE_ASSERT: () = assert!(size_of::<Square>() == size_of::<Option<Square>>());
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[repr(u8)]
+pub enum Colour {
+    White,
+    Black,
+}
+#[derive(PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Hash, Debug)]
+#[repr(u8)]
+pub enum File {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+}
+#[derive(PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Hash, Debug)]
+#[repr(u8)]
+pub enum Rank {
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+}
+#[rustfmt::skip]
+#[derive(PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Hash, Debug, Default)]
+#[repr(u8)]
+pub enum Square {
+    #[default]
+    A1, B1, C1, D1, E1, F1, G1, H1,
+    A2, B2, C2, D2, E2, F2, G2, H2,
+    A3, B3, C3, D3, E3, F3, G3, H3,
+    A4, B4, C4, D4, E4, F4, G4, H4,
+    A5, B5, C5, D5, E5, F5, G5, H5,
+    A6, B6, C6, D6, E6, F6, G6, H6,
+    A7, B7, C7, D7, E7, F7, G7, H7,
+    A8, B8, C8, D8, E8, F8, G8, H8,
+}
 
 pub const SQUARE_NAMES: [&str; 64] = [
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
@@ -37,24 +77,8 @@ pub const BB_FILE_H: BitBoard = 0x8080_8080_8080_8080;
 pub const BB_LIGHT_SQUARES: BitBoard = 0x55AA_55AA_55AA_55AA;
 pub const BB_DARK_SQUARES: BitBoard = 0xAA55_AA55_AA55_AA55;
 pub const RANKS: [BitBoard; 8] = [
-    BB_RANK_1,
-    BB_RANK_2,
-    BB_RANK_3,
-    BB_RANK_4,
-    BB_RANK_5,
-    BB_RANK_6,
-    BB_RANK_7,
-    BB_RANK_8,
+    BB_RANK_1, BB_RANK_2, BB_RANK_3, BB_RANK_4, BB_RANK_5, BB_RANK_6, BB_RANK_7, BB_RANK_8,
 ];
 pub const FILES: [BitBoard; 8] = [
-    BB_FILE_A,
-    BB_FILE_B,
-    BB_FILE_C,
-    BB_FILE_D,
-    BB_FILE_E,
-    BB_FILE_F,
-    BB_FILE_G,
-    BB_FILE_H,
+    BB_FILE_A, BB_FILE_B, BB_FILE_C, BB_FILE_D, BB_FILE_E, BB_FILE_F, BB_FILE_G, BB_FILE_H,
 ];
-
-

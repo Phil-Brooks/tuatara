@@ -1,19 +1,6 @@
-use crate::file::File;
-use crate::square::Square;
+use crate::consts::*;
 use std::ops::{Index, IndexMut};
 
-#[derive(PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Hash, Debug)]
-#[repr(u8)]
-pub enum Rank {
-    One,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-}
 impl Rank {
     pub const fn abs_diff(self, other: Self) -> u8 {
         (self as u8).abs_diff(other as u8)
