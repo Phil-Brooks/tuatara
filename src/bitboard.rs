@@ -275,7 +275,7 @@ mod tests {
         assert_eq!(bb_it.next(), Some(Square::A1));
         assert_eq!(bb_it.next(), Some(Square::A2));
         bb_it = bitboard::iter(BB_FILE_B);
-        let bstr = bb_it.map(|s| SQUARE_NAMES[s.index()]).collect::<Vec<_>>();
+        let bstr: Vec<String> = bb_it.map(|s| s.to_string()).collect();
         assert_eq!(bstr, vec!["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"]);
     }
 }
