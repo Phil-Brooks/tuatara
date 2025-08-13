@@ -96,7 +96,7 @@ impl Square {
     }
 
     pub const fn as_bb(self) -> BitBoard {
-        BitBoard(1u64 << self.index())
+        1u64 << self.index()
     }
 }
 impl<T> Index<Square> for [T; 64] {
