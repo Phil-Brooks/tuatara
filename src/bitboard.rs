@@ -6,14 +6,15 @@ use std::{
     },
 };
 
-use crate::types::Square;
+use crate::consts::*;
+use crate::square::Square;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Default, Debug)]
 #[repr(transparent)]
 pub struct BitBoard(pub u64);
 
 impl BitBoard {
-    pub const EMPTY: Self = Self(0);
+    //pub const EMPTY: Self = Self(0);
     pub const FULL: Self = Self(!0);
     pub const RANK_1: Self = Self(0x0000_0000_0000_00FF);
     pub const RANK_2: Self = Self(0x0000_0000_0000_FF00);
@@ -134,10 +135,10 @@ impl BitBoard {
         self & Self(self.0.wrapping_sub(1))
     }
     pub fn one(self) -> bool {
-        self != Self::EMPTY && self.without_lsb() == Self::EMPTY
+        self != BB_EMPTY && self.without_lsb() == BB_EMPTY
     }
     pub fn many(self) -> bool {
-        self.without_lsb() != Self::EMPTY
+        self.without_lsb() != BB_EMPTY
     }
 }
 
@@ -255,7 +256,7 @@ impl Display for BitBoard {
 
 #[cfg(test)]
 mod tests {
-    use crate::{bitboard::BitBoard, types::Square};
+    use crate::{bitboard::BitBoard, consts::*, square::Square};
     #[test]
     fn to_string() {
         let bbstr = BitBoard(1).to_string();
@@ -266,7 +267,7 @@ mod tests {
     }
     #[test]
     fn empty() {
-        let empty = BitBoard::EMPTY;
+        let empty = BB_EMPTY;
         assert_eq!(empty, BitBoard(0));
         assert!(!empty.one());
         assert!(!empty.many());
@@ -280,134 +281,137 @@ mod tests {
     }
     #[test]
     fn north_east_one() {
-        let mut bb = BitBoard::from_square(crate::types::Square::A1);
+        let mut bb = BitBoard::from_square(crate::square::Square::A1);
         let mut ne_bb = bb.north_east_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::B2));
-        bb = BitBoard::from_square(crate::types::Square::B5);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::B2));
+        bb = BitBoard::from_square(crate::square::Square::B5);
         ne_bb = bb.north_east_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::C6));
-        bb = BitBoard::from_square(crate::types::Square::H4);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::C6));
+        bb = BitBoard::from_square(crate::square::Square::H4);
         ne_bb = bb.north_east_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
-        bb = BitBoard::from_square(crate::types::Square::G8);
+        assert_eq!(ne_bb, BB_EMPTY);
+        bb = BitBoard::from_square(crate::square::Square::G8);
         ne_bb = bb.north_east_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
+        assert_eq!(ne_bb, BB_EMPTY);
     }
     #[test]
     fn north_west_one() {
-        let mut bb = BitBoard::from_square(crate::types::Square::H1);
+        let mut bb = BitBoard::from_square(crate::square::Square::H1);
         let mut ne_bb = bb.north_west_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::G2));
-        bb = BitBoard::from_square(crate::types::Square::B5);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::G2));
+        bb = BitBoard::from_square(crate::square::Square::B5);
         ne_bb = bb.north_west_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::A6));
-        bb = BitBoard::from_square(crate::types::Square::A4);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::A6));
+        bb = BitBoard::from_square(crate::square::Square::A4);
         ne_bb = bb.north_west_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
-        bb = BitBoard::from_square(crate::types::Square::G8);
+        assert_eq!(ne_bb, BB_EMPTY);
+        bb = BitBoard::from_square(crate::square::Square::G8);
         ne_bb = bb.north_west_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
+        assert_eq!(ne_bb, BB_EMPTY);
     }
     #[test]
     fn south_east_one() {
-        let mut bb = BitBoard::from_square(crate::types::Square::A2);
+        let mut bb = BitBoard::from_square(crate::square::Square::A2);
         let mut ne_bb = bb.south_east_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::B1));
-        bb = BitBoard::from_square(crate::types::Square::B5);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::B1));
+        bb = BitBoard::from_square(crate::square::Square::B5);
         ne_bb = bb.south_east_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::C4));
-        bb = BitBoard::from_square(crate::types::Square::H4);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::C4));
+        bb = BitBoard::from_square(crate::square::Square::H4);
         ne_bb = bb.south_east_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
-        bb = BitBoard::from_square(crate::types::Square::G1);
+        assert_eq!(ne_bb, BB_EMPTY);
+        bb = BitBoard::from_square(crate::square::Square::G1);
         ne_bb = bb.south_east_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
+        assert_eq!(ne_bb, BB_EMPTY);
     }
     #[test]
     fn south_west_one() {
-        let mut bb = BitBoard::from_square(crate::types::Square::H2);
+        let mut bb = BitBoard::from_square(crate::square::Square::H2);
         let mut ne_bb = bb.south_west_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::G1));
-        bb = BitBoard::from_square(crate::types::Square::B5);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::G1));
+        bb = BitBoard::from_square(crate::square::Square::B5);
         ne_bb = bb.south_west_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::A4));
-        bb = BitBoard::from_square(crate::types::Square::A4);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::A4));
+        bb = BitBoard::from_square(crate::square::Square::A4);
         ne_bb = bb.south_west_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
-        bb = BitBoard::from_square(crate::types::Square::G1);
+        assert_eq!(ne_bb, BB_EMPTY);
+        bb = BitBoard::from_square(crate::square::Square::G1);
         ne_bb = bb.south_west_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
+        assert_eq!(ne_bb, BB_EMPTY);
     }
     #[test]
     fn east_one() {
-        let mut bb = BitBoard::from_square(crate::types::Square::A2);
+        let mut bb = BitBoard::from_square(crate::square::Square::A2);
         let mut ne_bb = bb.east_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::B2));
-        bb = BitBoard::from_square(crate::types::Square::B5);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::B2));
+        bb = BitBoard::from_square(crate::square::Square::B5);
         ne_bb = bb.east_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::C5));
-        bb = BitBoard::from_square(crate::types::Square::H4);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::C5));
+        bb = BitBoard::from_square(crate::square::Square::H4);
         ne_bb = bb.east_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
+        assert_eq!(ne_bb, BB_EMPTY);
     }
     #[test]
     fn west_one() {
-        let mut bb = BitBoard::from_square(crate::types::Square::B2);
+        let mut bb = BitBoard::from_square(crate::square::Square::B2);
         let mut ne_bb = bb.west_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::A2));
-        bb = BitBoard::from_square(crate::types::Square::B5);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::A2));
+        bb = BitBoard::from_square(crate::square::Square::B5);
         ne_bb = bb.west_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::A5));
-        bb = BitBoard::from_square(crate::types::Square::A4);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::A5));
+        bb = BitBoard::from_square(crate::square::Square::A4);
         ne_bb = bb.west_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
+        assert_eq!(ne_bb, BB_EMPTY);
     }
     #[test]
     fn north_one() {
-        let mut bb = BitBoard::from_square(crate::types::Square::B2);
+        let mut bb = BitBoard::from_square(crate::square::Square::B2);
         let mut ne_bb = bb.north_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::B3));
-        bb = BitBoard::from_square(crate::types::Square::B5);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::B3));
+        bb = BitBoard::from_square(crate::square::Square::B5);
         ne_bb = bb.north_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::B6));
-        bb = BitBoard::from_square(crate::types::Square::B8);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::B6));
+        bb = BitBoard::from_square(crate::square::Square::B8);
         ne_bb = bb.north_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
+        assert_eq!(ne_bb, BB_EMPTY);
     }
     #[test]
     fn south_one() {
-        let mut bb = BitBoard::from_square(crate::types::Square::B2);
+        let mut bb = BitBoard::from_square(crate::square::Square::B2);
         let mut ne_bb = bb.south_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::B1));
-        bb = BitBoard::from_square(crate::types::Square::B5);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::B1));
+        bb = BitBoard::from_square(crate::square::Square::B5);
         ne_bb = bb.south_one();
-        assert_eq!(ne_bb, BitBoard::from_square(crate::types::Square::B4));
-        bb = BitBoard::from_square(crate::types::Square::B1);
+        assert_eq!(ne_bb, BitBoard::from_square(crate::square::Square::B4));
+        bb = BitBoard::from_square(crate::square::Square::B1);
         ne_bb = bb.south_one();
-        assert_eq!(ne_bb, BitBoard::EMPTY);
+        assert_eq!(ne_bb, BB_EMPTY);
     }
     #[test]
     fn isolate_lsb() {
         let bb = BitBoard::FILE_A;
         let isolated = bb.isolate_lsb();
-        assert_eq!(isolated, BitBoard::from_square(crate::types::Square::A1));
+        assert_eq!(isolated, BitBoard::from_square(crate::square::Square::A1));
     }
     #[test]
     fn without_lsb() {
-        let bb = BitBoard::from_square(crate::types::Square::A2)
-            | BitBoard::from_square(crate::types::Square::A3);
+        let bb = BitBoard::from_square(crate::square::Square::A2)
+            | BitBoard::from_square(crate::square::Square::A3);
         let without_lsb = bb.without_lsb();
-        assert_eq!(without_lsb, BitBoard::from_square(crate::types::Square::A3));
+        assert_eq!(
+            without_lsb,
+            BitBoard::from_square(crate::square::Square::A3)
+        );
     }
     #[test]
     fn add_square() {
         let one = Square::E4.as_bb();
-        assert_ne!(one, BitBoard::EMPTY);
+        assert_ne!(one, BB_EMPTY);
         assert!(one.one());
         assert!(!one.many());
 
         let two = one.add_square(Square::E5);
-        assert_ne!(two, BitBoard::EMPTY);
+        assert_ne!(two, BB_EMPTY);
         assert!(!two.one());
         assert!(two.many());
     }

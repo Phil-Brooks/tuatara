@@ -1,5 +1,9 @@
 pub mod bitboard;
-pub mod types;
+pub mod colour;
+pub mod consts;
+pub mod file;
+pub mod rank;
+pub mod square;
 
 use crate::bitboard::BitBoard;
 
