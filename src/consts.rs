@@ -3,6 +3,7 @@ const _FILE_ASSERT: () = assert!(size_of::<File>() == size_of::<Option<File>>())
 const _RANK_ASSERT: () = assert!(size_of::<Rank>() == size_of::<Option<Rank>>());
 const _SQUARE_ASSERT: () = assert!(size_of::<Square>() == size_of::<Option<Square>>());
 const _PIECE_TYPE_ASSERT: () = assert!(size_of::<PieceType>() == size_of::<Option<PieceType>>());
+const _PIECE_ASSERT: () = assert!(size_of::<Piece>() == size_of::<Option<Piece>>());
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u8)]
@@ -92,6 +93,14 @@ pub enum PieceType {
     Queen,
     King,
 }
+#[rustfmt::skip]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Default)]
+#[repr(u8)]
+pub enum Piece {
+    #[default]
+    WP, WN, WB, WR, WQ, WK,
+    BP, BN, BB, BR, BQ, BK,
+}
 
 #[cfg(test)]
 mod tests {
@@ -116,5 +125,20 @@ mod tests {
         assert_eq!(PieceType::Rook as u8, 3);
         assert_eq!(PieceType::Queen as u8, 4);
         assert_eq!(PieceType::King as u8, 5);
+    }
+    #[test]
+    fn piece_constants() {
+        assert_eq!(Piece::WP as u8, 0);
+        assert_eq!(Piece::WN as u8, 1);
+        assert_eq!(Piece::WB as u8, 2);
+        assert_eq!(Piece::WR as u8, 3);
+        assert_eq!(Piece::WQ as u8, 4);
+        assert_eq!(Piece::WK as u8, 5);
+        assert_eq!(Piece::BP as u8, 6);
+        assert_eq!(Piece::BN as u8, 7);
+        assert_eq!(Piece::BB as u8, 8);
+        assert_eq!(Piece::BR as u8, 9);
+        assert_eq!(Piece::BQ as u8, 10);
+        assert_eq!(Piece::BK as u8, 11);
     }
 }
