@@ -30,6 +30,10 @@ impl Piece {
         // SAFETY: pt_index is always within the bounds of the type.
         unsafe { PieceType::from_index_unchecked(pt_index) }
     }
+    pub const fn from_piecetype_and_color(piecetype: PieceType, colour: Colour) -> Self {
+        let index = colour as u8 * 6 + piecetype as u8;
+        unsafe { std::mem::transmute(index) }
+    }
     pub const fn char(self) -> char {
         match self {
             Self::WP => 'P',

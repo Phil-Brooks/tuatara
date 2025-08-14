@@ -1,6 +1,8 @@
+use crate::bitboard;
 use crate::consts::*;
+
 impl Board {
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Board {
             by_piece: [
                 0x00ff_0000_0000_ff00,
@@ -14,7 +16,7 @@ impl Board {
             occupied: 0xffff_0000_0000_ffff,
         }
     }
-    pub fn empty() -> Self {
+    pub const fn empty() -> Self {
         Board {
             by_piece: [BB_EMPTY; 6],
             by_col: [BB_EMPTY; 2],
@@ -55,6 +57,84 @@ impl Board {
             by_col,
             occupied,
         })
+    }
+    pub const fn into_bitboards(self) -> ([BitBoard; 6], [BitBoard; 2]) {
+        (self.by_piece, self.by_col)
+    }
+    pub const fn occupied(&self) -> BitBoard {
+        self.occupied
+    }
+    pub const fn pawns(&self) -> BitBoard {
+        self.by_piece[PieceType::Pawn.index()]
+    }
+    pub const fn knights(&self) -> BitBoard {
+        self.by_piece[PieceType::Knight.index()]
+    }
+    pub const fn bishops(&self) -> BitBoard {
+        self.by_piece[PieceType::Bishop.index()]
+    }
+    pub const fn rooks(&self) -> BitBoard {
+        self.by_piece[PieceType::Rook.index()]
+    }
+    pub const fn queens(&self) -> BitBoard {
+        self.by_piece[PieceType::Queen.index()]
+    }
+    pub const fn kings(&self) -> BitBoard {
+        self.by_piece[PieceType::King.index()]
+    }
+    pub const fn white(&self) -> BitBoard {
+        self.by_col[Colour::White.index()]
+    }
+    pub const fn black(&self) -> BitBoard {
+        self.by_col[Colour::Black.index()]
+    }
+    pub const fn sliders(&self) -> BitBoard {
+        self.rooks() ^ self.bishops() ^ self.queens()
+    }
+    pub const fn steppers(&self) -> BitBoard {
+        self.knights() ^ self.pawns() ^ self.kings()
+    }
+    pub const fn rooks_and_queens(&self) -> BitBoard {
+        self.rooks() ^ self.queens()
+    }
+    pub const fn bishops_and_queens(&self) -> BitBoard {
+        self.bishops() ^ self.queens()
+    }
+    pub const fn king_of(&self, colour: Colour) -> Square {
+        bitboard::first(self.by_piece[PieceType::King.index()] & self.by_col[colour.index()])
+    }
+    pub fn color_at(&self, square: Square) -> Option<Colour> {
+        let mask = bitboard::from_square(square);
+        if self.by_col[Colour::White.index()] & mask != BB_EMPTY {
+            Some(Colour::White)
+        } else if self.by_col[Colour::Black.index()] & mask != BB_EMPTY {
+            Some(Colour::Black)
+        } else {
+            None
+        }
+    }
+    pub fn piecetype_at(&self, square: Square) -> Option<PieceType> {
+        let mask = bitboard::from_square(square);
+        let mut i = 0;
+        while i < self.by_piece.len() {
+            let bb = self.by_piece[i];
+            if bb & mask != BB_EMPTY {
+                return Some(unsafe { PieceType::from_index_unchecked(i as u8) });
+            }
+            i += 1;
+        }
+        None
+    }
+    pub fn piece_at(&self, square: Square) -> Option<Piece> {
+        let piecetype = self.piecetype_at(square);
+        let col = self.color_at(square);
+        if piecetype.is_none() || col.is_none() {
+            return None;
+        }
+        Some(Piece::from_piecetype_and_color(
+            piecetype.unwrap(),
+            col.unwrap(),
+        ))
     }
 }
 
@@ -105,5 +185,121 @@ mod tests {
         by_piece = nbd.by_piece;
         board = Board::try_from_bitboards(by_piece, by_col);
         assert!(board.is_ok());
+    }
+    #[test]
+    fn into_bitboards() {
+        let nbd = Board::new();
+        let (by_piece, by_col) = nbd.clone().into_bitboards();
+        assert_eq!(by_piece[PieceType::Pawn.index()], 0x00ff_0000_0000_ff00);
+        assert_eq!(by_col[Colour::White.index()], 0xffff);
+        assert_eq!(nbd.occupied, 0xffff_0000_0000_ffff);
+    }
+    #[test]
+    fn occupied() {
+        let nbd = Board::new();
+        assert_eq!(nbd.occupied(), 0xffff_0000_0000_ffff);
+    }
+    #[test]
+    fn pawns() {
+        let nbd = Board::new();
+        assert_eq!(nbd.pawns(), 0x00ff_0000_0000_ff00);
+    }
+    #[test]
+    fn knights() {
+        let nbd = Board::new();
+        assert_eq!(nbd.knights(), 0x4200_0000_0000_0042);
+    }
+    #[test]
+    fn bishops() {
+        let nbd = Board::new();
+        assert_eq!(nbd.bishops(), 0x2400_0000_0000_0024);
+    }
+    #[test]
+    fn rooks() {
+        let nbd = Board::new();
+        assert_eq!(nbd.rooks(), 0x8100_0000_0000_0081);
+    }
+    #[test]
+    fn queens() {
+        let nbd = Board::new();
+        assert_eq!(nbd.queens(), 0x0800_0000_0000_0008);
+    }
+    #[test]
+    fn kings() {
+        let nbd = Board::new();
+        assert_eq!(nbd.kings(), 0x1000_0000_0000_0010);
+    }
+    #[test]
+    fn white() {
+        let nbd = Board::new();
+        assert_eq!(nbd.white(), 0xffff);
+    }
+    #[test]
+    fn black() {
+        let nbd = Board::new();
+        assert_eq!(nbd.black(), 0xffff_0000_0000_0000);
+    }
+    #[test]
+    fn sliders() {
+        let nbd = Board::new();
+        assert_eq!(
+            nbd.sliders(),
+            0x8100_0000_0000_0081 ^ 0x2400_0000_0000_0024 ^ 0x0800_0000_0000_0008
+        );
+    }
+    #[test]
+    fn steppers() {
+        let nbd = Board::new();
+        assert_eq!(
+            nbd.steppers(),
+            0x4200_0000_0000_0042 ^ 0x00ff_0000_0000_ff00 ^ 0x1000_0000_0000_0010
+        );
+    }
+    #[test]
+    fn rooks_and_queens() {
+        let nbd = Board::new();
+        assert_eq!(
+            nbd.rooks_and_queens(),
+            0x8100_0000_0000_0081 ^ 0x0800_0000_0000_0008
+        );
+    }
+    #[test]
+    fn bishops_and_queens() {
+        let nbd = Board::new();
+        assert_eq!(
+            nbd.bishops_and_queens(),
+            0x2400_0000_0000_0024 ^ 0x0800_0000_0000_0008
+        );
+    }
+    #[test]
+    fn king_of() {
+        let nbd = Board::new();
+        assert_eq!(nbd.king_of(Colour::White), Square::E1);
+        assert_eq!(nbd.king_of(Colour::Black), Square::E8);
+    }
+    #[test]
+    fn color_at() {
+        let nbd = Board::new();
+        assert_eq!(nbd.color_at(Square::A1), Some(Colour::White));
+        assert_eq!(nbd.color_at(Square::E8), Some(Colour::Black));
+        assert_eq!(nbd.color_at(Square::D4), None);
+    }
+    #[test]
+    fn piecetype_at() {
+        let nbd = Board::new();
+        assert_eq!(nbd.piecetype_at(Square::A1), Some(PieceType::Rook));
+        assert_eq!(nbd.piecetype_at(Square::E8), Some(PieceType::King));
+        assert_eq!(nbd.piecetype_at(Square::D2), Some(PieceType::Pawn));
+        assert_eq!(nbd.piecetype_at(Square::H8), Some(PieceType::Rook));
+        assert_eq!(nbd.piecetype_at(Square::A5), None);
+    }
+    #[test]
+    fn piece_at() {
+        let nbd = Board::new();
+        assert_eq!(nbd.piece_at(Square::A1), Some(Piece::WR));
+        assert_eq!(nbd.piece_at(Square::E8), Some(Piece::BK));
+        assert_eq!(nbd.piece_at(Square::D2), Some(Piece::WP));
+        assert_eq!(nbd.piece_at(Square::H8), Some(Piece::BR));
+        assert_eq!(nbd.piece_at(Square::A5), None);
     }
 }
