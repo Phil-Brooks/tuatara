@@ -101,7 +101,12 @@ pub enum Piece {
     WP, WN, WB, WR, WQ, WK,
     BP, BN, BB, BR, BQ, BK,
 }
-
+#[derive(Clone, Eq, PartialEq, Hash, Debug)]
+pub struct Board {
+    pub by_piece: [BitBoard; 6],
+    pub by_col: [BitBoard; 2],
+    pub occupied: BitBoard,
+}
 #[cfg(test)]
 mod tests {
     use crate::consts::*;
