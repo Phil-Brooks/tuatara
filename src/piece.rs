@@ -25,12 +25,12 @@ impl Piece {
             Colour::Black
         }
     }
-    pub const fn piece_type(self) -> PieceType {
+    pub const fn piecetype(self) -> PieceType {
         let pt_index = self as u8 % 6;
         // SAFETY: pt_index is always within the bounds of the type.
         unsafe { PieceType::from_index_unchecked(pt_index) }
     }
-    pub const fn from_piecetype_and_color(piecetype: PieceType, colour: Colour) -> Self {
+    pub const fn from_piecetype_and_col(piecetype: PieceType, colour: Colour) -> Self {
         let index = colour as u8 * 6 + piecetype as u8;
         unsafe { std::mem::transmute(index) }
     }
@@ -131,19 +131,70 @@ mod tests {
         assert_eq!(Piece::BK.colour(), Colour::Black);
     }
     #[test]
-    fn piece_type() {
-        assert_eq!(Piece::WP.piece_type(), PieceType::Pawn);
-        assert_eq!(Piece::BP.piece_type(), PieceType::Pawn);
-        assert_eq!(Piece::WN.piece_type(), PieceType::Knight);
-        assert_eq!(Piece::BN.piece_type(), PieceType::Knight);
-        assert_eq!(Piece::WB.piece_type(), PieceType::Bishop);
-        assert_eq!(Piece::BB.piece_type(), PieceType::Bishop);
-        assert_eq!(Piece::WR.piece_type(), PieceType::Rook);
-        assert_eq!(Piece::BR.piece_type(), PieceType::Rook);
-        assert_eq!(Piece::WQ.piece_type(), PieceType::Queen);
-        assert_eq!(Piece::BQ.piece_type(), PieceType::Queen);
-        assert_eq!(Piece::WK.piece_type(), PieceType::King);
-        assert_eq!(Piece::BK.piece_type(), PieceType::King);
+    fn piecetype() {
+        assert_eq!(Piece::WP.piecetype(), PieceType::Pawn);
+        assert_eq!(Piece::BP.piecetype(), PieceType::Pawn);
+        assert_eq!(Piece::WN.piecetype(), PieceType::Knight);
+        assert_eq!(Piece::BN.piecetype(), PieceType::Knight);
+        assert_eq!(Piece::WB.piecetype(), PieceType::Bishop);
+        assert_eq!(Piece::BB.piecetype(), PieceType::Bishop);
+        assert_eq!(Piece::WR.piecetype(), PieceType::Rook);
+        assert_eq!(Piece::BR.piecetype(), PieceType::Rook);
+        assert_eq!(Piece::WQ.piecetype(), PieceType::Queen);
+        assert_eq!(Piece::BQ.piecetype(), PieceType::Queen);
+        assert_eq!(Piece::WK.piecetype(), PieceType::King);
+        assert_eq!(Piece::BK.piecetype(), PieceType::King);
+    }
+    #[test]
+    fn from_piecetype_and_col() {
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Pawn, Colour::White),
+            Piece::WP
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Pawn, Colour::Black),
+            Piece::BP
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Knight, Colour::White),
+            Piece::WN
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Knight, Colour::Black),
+            Piece::BN
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Bishop, Colour::White),
+            Piece::WB
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Bishop, Colour::Black),
+            Piece::BB
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Rook, Colour::White),
+            Piece::WR
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Rook, Colour::Black),
+            Piece::BR
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Queen, Colour::White),
+            Piece::WQ
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::Queen, Colour::Black),
+            Piece::BQ
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::King, Colour::White),
+            Piece::WK
+        );
+        assert_eq!(
+            Piece::from_piecetype_and_col(PieceType::King, Colour::Black),
+            Piece::BK
+        );
     }
     #[test]
     fn char() {
