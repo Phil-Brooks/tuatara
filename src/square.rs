@@ -43,8 +43,8 @@ impl Square {
         // this operation cannot construct a value >= 64.
         unsafe { std::mem::transmute(self as u8 ^ 0b000_111) }
     }
-    pub const fn relative_to(self, side: Colour) -> Self {
-        if matches!(side, Colour::White) {
+    pub const fn relative_to(self, side: Col) -> Self {
+        if matches!(side, Col::White) {
             self
         } else {
             self.flip_rank()
@@ -111,22 +111,22 @@ impl Square {
     pub const fn as_bb(self) -> BitBoard {
         1u64 << self.index()
     }
-    pub fn pawn_push(self, side: Colour) -> Option<Self> {
-        if side == Colour::White {
+    pub fn pawn_push(self, side: Col) -> Option<Self> {
+        if side == Col::White {
             self.add(8)
         } else {
             self.sub(8)
         }
     }
-    pub fn pawn_right(self, side: Colour) -> Option<Self> {
-        if side == Colour::White {
+    pub fn pawn_right(self, side: Col) -> Option<Self> {
+        if side == Col::White {
             self.add(9)
         } else {
             self.sub(7)
         }
     }
-    pub fn pawn_left(self, side: Colour) -> Option<Self> {
-        if side == Colour::White {
+    pub fn pawn_left(self, side: Col) -> Option<Self> {
+        if side == Col::White {
             self.add(7)
         } else {
             self.sub(9)
@@ -226,9 +226,9 @@ mod tests {
     }
     #[test]
     fn relative_to() {
-        let square = Square::A1.relative_to(Colour::White);
+        let square = Square::A1.relative_to(Col::White);
         assert_eq!(square, Square::A1);
-        let square = Square::A1.relative_to(Colour::Black);
+        let square = Square::A1.relative_to(Col::Black);
         assert_eq!(square, Square::A8);
     }
     #[test]
@@ -294,25 +294,25 @@ mod tests {
     #[test]
     fn pawn_push() {
         let square = Square::B3;
-        let pushed_square = square.pawn_push(Colour::White).unwrap();
+        let pushed_square = square.pawn_push(Col::White).unwrap();
         assert_eq!(pushed_square, Square::B4);
-        let pushed_square_black = square.pawn_push(Colour::Black).unwrap();
+        let pushed_square_black = square.pawn_push(Col::Black).unwrap();
         assert_eq!(pushed_square_black, Square::B2);
     }
     #[test]
     fn pawn_right() {
         let square = Square::B3;
-        let right_square = square.pawn_right(Colour::White).unwrap();
+        let right_square = square.pawn_right(Col::White).unwrap();
         assert_eq!(right_square, Square::C4);
-        let right_square_black = square.pawn_right(Colour::Black).unwrap();
+        let right_square_black = square.pawn_right(Col::Black).unwrap();
         assert_eq!(right_square_black, Square::C2);
     }
     #[test]
     fn pawn_left() {
         let square = Square::B3;
-        let left_square = square.pawn_left(Colour::White).unwrap();
+        let left_square = square.pawn_left(Col::White).unwrap();
         assert_eq!(left_square, Square::A4);
-        let left_square_black = square.pawn_left(Colour::Black).unwrap();
+        let left_square_black = square.pawn_left(Col::Black).unwrap();
         assert_eq!(left_square_black, Square::A2);
     }
     #[test]

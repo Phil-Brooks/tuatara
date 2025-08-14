@@ -1,6 +1,6 @@
 pub mod bitboard;
 pub mod board;
-pub mod colour;
+pub mod col;
 pub mod consts;
 pub mod file;
 pub mod piece;
@@ -14,7 +14,7 @@ fn main() {
     let bd = Board::new();
     let mut bb: BitBoard = bd.by_piece[PieceType::Pawn.index()];
     println!("bb1:\n{}", bitboard::to_string(bb));
-    bb = bd.by_col[Colour::Black.index()];
+    bb = bd.by_col[Col::Black.index()];
     let bb2str = bitboard::to_string(bb);
     println!("bb2:\n{}", bitboard::to_string(bb));
     println!("bb2str:\n{}", bb2str);

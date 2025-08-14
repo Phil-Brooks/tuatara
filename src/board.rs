@@ -44,11 +44,11 @@ impl Board {
             return Err("roles overlap");
         }
 
-        if by_col[Colour::Black.index()] & by_col[Colour::White.index()] != BB_EMPTY {
+        if by_col[Col::Black.index()] & by_col[Col::White.index()] != BB_EMPTY {
             return Err("colours overlap");
         }
 
-        if occupied != by_col[Colour::Black.index()] | by_col[Colour::White.index()] {
+        if occupied != by_col[Col::Black.index()] | by_col[Col::White.index()] {
             return Err("roles and colours are mismatched");
         }
 
@@ -83,10 +83,10 @@ impl Board {
         self.by_piece[PieceType::King.index()]
     }
     pub const fn white(&self) -> BitBoard {
-        self.by_col[Colour::White.index()]
+        self.by_col[Col::White.index()]
     }
     pub const fn black(&self) -> BitBoard {
-        self.by_col[Colour::Black.index()]
+        self.by_col[Col::Black.index()]
     }
     pub const fn sliders(&self) -> BitBoard {
         self.rooks() ^ self.bishops() ^ self.queens()
@@ -100,15 +100,15 @@ impl Board {
     pub const fn bishops_and_queens(&self) -> BitBoard {
         self.bishops() ^ self.queens()
     }
-    pub const fn king_of(&self, colour: Colour) -> Square {
+    pub const fn king_of(&self, colour: Col) -> Square {
         bitboard::first(self.by_piece[PieceType::King.index()] & self.by_col[colour.index()])
     }
-    pub fn col_at(&self, square: Square) -> Option<Colour> {
+    pub fn col_at(&self, square: Square) -> Option<Col> {
         let mask = bitboard::from_square(square);
-        if self.by_col[Colour::White.index()] & mask != BB_EMPTY {
-            Some(Colour::White)
-        } else if self.by_col[Colour::Black.index()] & mask != BB_EMPTY {
-            Some(Colour::Black)
+        if self.by_col[Col::White.index()] & mask != BB_EMPTY {
+            Some(Col::White)
+        } else if self.by_col[Col::Black.index()] & mask != BB_EMPTY {
+            Some(Col::Black)
         } else {
             None
         }
@@ -175,7 +175,7 @@ impl Board {
         self.by_col[piece.colour().index()] |= mask;
         self.occupied |= mask;
     }
-    pub const fn by_col(&self, col: Colour) -> BitBoard {
+    pub const fn by_col(&self, col: Col) -> BitBoard {
         self.by_col[col.index()]
     }
 }
@@ -191,7 +191,7 @@ mod tests {
             board.by_piece[PieceType::Pawn.index()],
             0x00ff_0000_0000_ff00
         );
-        assert_eq!(board.by_col[Colour::White.index()], 0xffff);
+        assert_eq!(board.by_col[Col::White.index()], 0xffff);
         assert_eq!(board.occupied, 0xffff_0000_0000_ffff);
     }
     #[test]
@@ -234,7 +234,7 @@ mod tests {
         let nbd = Board::new();
         let (by_piece, by_col) = nbd.clone().into_bitboards();
         assert_eq!(by_piece[PieceType::Pawn.index()], 0x00ff_0000_0000_ff00);
-        assert_eq!(by_col[Colour::White.index()], 0xffff);
+        assert_eq!(by_col[Col::White.index()], 0xffff);
         assert_eq!(nbd.occupied, 0xffff_0000_0000_ffff);
     }
     #[test]
@@ -317,14 +317,14 @@ mod tests {
     #[test]
     fn king_of() {
         let nbd = Board::new();
-        assert_eq!(nbd.king_of(Colour::White), Square::E1);
-        assert_eq!(nbd.king_of(Colour::Black), Square::E8);
+        assert_eq!(nbd.king_of(Col::White), Square::E1);
+        assert_eq!(nbd.king_of(Col::Black), Square::E8);
     }
     #[test]
     fn col_at() {
         let nbd = Board::new();
-        assert_eq!(nbd.col_at(Square::A1), Some(Colour::White));
-        assert_eq!(nbd.col_at(Square::E8), Some(Colour::Black));
+        assert_eq!(nbd.col_at(Square::A1), Some(Col::White));
+        assert_eq!(nbd.col_at(Square::E8), Some(Col::Black));
         assert_eq!(nbd.col_at(Square::D4), None);
     }
     #[test]
@@ -356,7 +356,7 @@ mod tests {
             BB_EMPTY
         );
         assert_eq!(
-            nbd.by_col[Colour::White.index()] & bitboard::from_square(Square::A1),
+            nbd.by_col[Col::White.index()] & bitboard::from_square(Square::A1),
             BB_EMPTY
         );
         assert_eq!(nbd.occupied & bitboard::from_square(Square::A1), BB_EMPTY);
@@ -371,7 +371,7 @@ mod tests {
             BB_EMPTY
         );
         assert_eq!(
-            nbd.by_col[Colour::White.index()] & bitboard::from_square(Square::A1),
+            nbd.by_col[Col::White.index()] & bitboard::from_square(Square::A1),
             BB_EMPTY
         );
         assert_eq!(nbd.occupied & bitboard::from_square(Square::A1), BB_EMPTY);
@@ -386,7 +386,7 @@ mod tests {
             bitboard::from_square(Square::A1)
         );
         assert_eq!(
-            nbd.by_col[Colour::White.index()] & bitboard::from_square(Square::A1),
+            nbd.by_col[Col::White.index()] & bitboard::from_square(Square::A1),
             bitboard::from_square(Square::A1)
         );
         assert_eq!(
@@ -404,7 +404,7 @@ mod tests {
             bitboard::from_square(Square::A1)
         );
         assert_eq!(
-            nbd.by_col[Colour::White.index()] & bitboard::from_square(Square::A1),
+            nbd.by_col[Col::White.index()] & bitboard::from_square(Square::A1),
             bitboard::from_square(Square::A1)
         );
         assert_eq!(
@@ -415,7 +415,7 @@ mod tests {
     #[test]
     fn by_col() {
         let nbd = Board::new();
-        assert_eq!(nbd.by_col(Colour::White), 0xffff);
-        assert_eq!(nbd.by_col(Colour::Black), 0xffff_0000_0000_0000);
+        assert_eq!(nbd.by_col(Col::White), 0xffff);
+        assert_eq!(nbd.by_col(Col::Black), 0xffff_0000_0000_0000);
     }
 }

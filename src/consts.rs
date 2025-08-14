@@ -1,4 +1,4 @@
-const _COLOUR_ASSERT: () = assert!(size_of::<Colour>() == size_of::<Option<Colour>>());
+const _COLOUR_ASSERT: () = assert!(size_of::<Col>() == size_of::<Option<Col>>());
 const _FILE_ASSERT: () = assert!(size_of::<File>() == size_of::<Option<File>>());
 const _RANK_ASSERT: () = assert!(size_of::<Rank>() == size_of::<Option<Rank>>());
 const _SQUARE_ASSERT: () = assert!(size_of::<Square>() == size_of::<Option<Square>>());
@@ -7,7 +7,7 @@ const _PIECE_ASSERT: () = assert!(size_of::<Piece>() == size_of::<Option<Piece>>
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u8)]
-pub enum Colour {
+pub enum Col {
     White,
     Black,
 }

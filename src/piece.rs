@@ -3,9 +3,9 @@ use std::fmt::Display;
 use std::ops::{Index, IndexMut};
 
 impl Piece {
-    pub const fn new(colour: Colour, piece_type: PieceType) -> Self {
+    pub const fn new(colour: Col, piece_type: PieceType) -> Self {
         let index = colour as u8 * 6 + piece_type as u8;
-        // SAFETY: Colour is {0, 1}, piece_type is {0, 1, 2, 3, 4, 5}.
+        // SAFETY: Col is {0, 1}, piece_type is {0, 1, 2, 3, 4, 5}.
         // colour * 6 + piece_type is therefore at most 11, which corresponds
         // to a valid enum variant.
         unsafe { std::mem::transmute(index) }
@@ -18,11 +18,11 @@ impl Piece {
             None
         }
     }
-    pub const fn colour(self) -> Colour {
+    pub const fn colour(self) -> Col {
         if (self as u8) < 6 {
-            Colour::White
+            Col::White
         } else {
-            Colour::Black
+            Col::Black
         }
     }
     pub const fn piecetype(self) -> PieceType {
@@ -30,7 +30,7 @@ impl Piece {
         // SAFETY: pt_index is always within the bounds of the type.
         unsafe { PieceType::from_index_unchecked(pt_index) }
     }
-    pub const fn from_piecetype_and_col(piecetype: PieceType, colour: Colour) -> Self {
+    pub const fn from_piecetype_and_col(piecetype: PieceType, colour: Col) -> Self {
         let index = colour as u8 * 6 + piecetype as u8;
         unsafe { std::mem::transmute(index) }
     }
@@ -86,18 +86,18 @@ mod tests {
     use crate::consts::*;
     #[test]
     fn new() {
-        assert_eq!(Piece::new(Colour::White, PieceType::Pawn), Piece::WP);
-        assert_eq!(Piece::new(Colour::Black, PieceType::Pawn), Piece::BP);
-        assert_eq!(Piece::new(Colour::White, PieceType::Knight), Piece::WN);
-        assert_eq!(Piece::new(Colour::Black, PieceType::Knight), Piece::BN);
-        assert_eq!(Piece::new(Colour::White, PieceType::Bishop), Piece::WB);
-        assert_eq!(Piece::new(Colour::Black, PieceType::Bishop), Piece::BB);
-        assert_eq!(Piece::new(Colour::White, PieceType::Rook), Piece::WR);
-        assert_eq!(Piece::new(Colour::Black, PieceType::Rook), Piece::BR);
-        assert_eq!(Piece::new(Colour::White, PieceType::Queen), Piece::WQ);
-        assert_eq!(Piece::new(Colour::Black, PieceType::Queen), Piece::BQ);
-        assert_eq!(Piece::new(Colour::White, PieceType::King), Piece::WK);
-        assert_eq!(Piece::new(Colour::Black, PieceType::King), Piece::BK);
+        assert_eq!(Piece::new(Col::White, PieceType::Pawn), Piece::WP);
+        assert_eq!(Piece::new(Col::Black, PieceType::Pawn), Piece::BP);
+        assert_eq!(Piece::new(Col::White, PieceType::Knight), Piece::WN);
+        assert_eq!(Piece::new(Col::Black, PieceType::Knight), Piece::BN);
+        assert_eq!(Piece::new(Col::White, PieceType::Bishop), Piece::WB);
+        assert_eq!(Piece::new(Col::Black, PieceType::Bishop), Piece::BB);
+        assert_eq!(Piece::new(Col::White, PieceType::Rook), Piece::WR);
+        assert_eq!(Piece::new(Col::Black, PieceType::Rook), Piece::BR);
+        assert_eq!(Piece::new(Col::White, PieceType::Queen), Piece::WQ);
+        assert_eq!(Piece::new(Col::Black, PieceType::Queen), Piece::BQ);
+        assert_eq!(Piece::new(Col::White, PieceType::King), Piece::WK);
+        assert_eq!(Piece::new(Col::Black, PieceType::King), Piece::BK);
     }
     #[test]
     fn from_index() {
@@ -117,18 +117,18 @@ mod tests {
     }
     #[test]
     fn colour() {
-        assert_eq!(Piece::WP.colour(), Colour::White);
-        assert_eq!(Piece::BP.colour(), Colour::Black);
-        assert_eq!(Piece::WN.colour(), Colour::White);
-        assert_eq!(Piece::BN.colour(), Colour::Black);
-        assert_eq!(Piece::WB.colour(), Colour::White);
-        assert_eq!(Piece::BB.colour(), Colour::Black);
-        assert_eq!(Piece::WR.colour(), Colour::White);
-        assert_eq!(Piece::BR.colour(), Colour::Black);
-        assert_eq!(Piece::WQ.colour(), Colour::White);
-        assert_eq!(Piece::BQ.colour(), Colour::Black);
-        assert_eq!(Piece::WK.colour(), Colour::White);
-        assert_eq!(Piece::BK.colour(), Colour::Black);
+        assert_eq!(Piece::WP.colour(), Col::White);
+        assert_eq!(Piece::BP.colour(), Col::Black);
+        assert_eq!(Piece::WN.colour(), Col::White);
+        assert_eq!(Piece::BN.colour(), Col::Black);
+        assert_eq!(Piece::WB.colour(), Col::White);
+        assert_eq!(Piece::BB.colour(), Col::Black);
+        assert_eq!(Piece::WR.colour(), Col::White);
+        assert_eq!(Piece::BR.colour(), Col::Black);
+        assert_eq!(Piece::WQ.colour(), Col::White);
+        assert_eq!(Piece::BQ.colour(), Col::Black);
+        assert_eq!(Piece::WK.colour(), Col::White);
+        assert_eq!(Piece::BK.colour(), Col::Black);
     }
     #[test]
     fn piecetype() {
@@ -148,51 +148,51 @@ mod tests {
     #[test]
     fn from_piecetype_and_col() {
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Pawn, Colour::White),
+            Piece::from_piecetype_and_col(PieceType::Pawn, Col::White),
             Piece::WP
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Pawn, Colour::Black),
+            Piece::from_piecetype_and_col(PieceType::Pawn, Col::Black),
             Piece::BP
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Knight, Colour::White),
+            Piece::from_piecetype_and_col(PieceType::Knight, Col::White),
             Piece::WN
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Knight, Colour::Black),
+            Piece::from_piecetype_and_col(PieceType::Knight, Col::Black),
             Piece::BN
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Bishop, Colour::White),
+            Piece::from_piecetype_and_col(PieceType::Bishop, Col::White),
             Piece::WB
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Bishop, Colour::Black),
+            Piece::from_piecetype_and_col(PieceType::Bishop, Col::Black),
             Piece::BB
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Rook, Colour::White),
+            Piece::from_piecetype_and_col(PieceType::Rook, Col::White),
             Piece::WR
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Rook, Colour::Black),
+            Piece::from_piecetype_and_col(PieceType::Rook, Col::Black),
             Piece::BR
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Queen, Colour::White),
+            Piece::from_piecetype_and_col(PieceType::Queen, Col::White),
             Piece::WQ
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::Queen, Colour::Black),
+            Piece::from_piecetype_and_col(PieceType::Queen, Col::Black),
             Piece::BQ
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::King, Colour::White),
+            Piece::from_piecetype_and_col(PieceType::King, Col::White),
             Piece::WK
         );
         assert_eq!(
-            Piece::from_piecetype_and_col(PieceType::King, Colour::Black),
+            Piece::from_piecetype_and_col(PieceType::King, Col::Black),
             Piece::BK
         );
     }
