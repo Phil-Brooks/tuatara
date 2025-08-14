@@ -178,6 +178,12 @@ impl Board {
     pub const fn by_col(&self, col: Col) -> BitBoard {
         self.by_col[col.index()]
     }
+    pub const fn by_piecetype(&self, piecetype: PieceType) -> BitBoard {
+        self.by_piece[piecetype.index()]
+    }
+    pub const fn by_piece(&self, piece: Piece) -> BitBoard {
+        self.by_piece[piece.piecetype().index()] & self.by_col[piece.colour().index()]
+    }
 }
 
 #[cfg(test)]
@@ -417,5 +423,25 @@ mod tests {
         let nbd = Board::new();
         assert_eq!(nbd.by_col(Col::White), 0xffff);
         assert_eq!(nbd.by_col(Col::Black), 0xffff_0000_0000_0000);
+    }
+    #[test]
+    fn by_piecetype() {
+        let nbd = Board::new();
+        assert_eq!(nbd.by_piecetype(PieceType::Pawn), 0x00ff_0000_0000_ff00);
+        assert_eq!(nbd.by_piecetype(PieceType::Knight), 0x4200_0000_0000_0042);
+        assert_eq!(nbd.by_piecetype(PieceType::Bishop), 0x2400_0000_0000_0024);
+        assert_eq!(nbd.by_piecetype(PieceType::Rook), 0x8100_0000_0000_0081);
+        assert_eq!(nbd.by_piecetype(PieceType::Queen), 0x0800_0000_0000_0008);
+        assert_eq!(nbd.by_piecetype(PieceType::King), 0x1000_0000_0000_0010);
+    }
+    #[test]
+    fn by_piece() {
+        let nbd = Board::new();
+        assert_eq!(nbd.by_piece(Piece::WP), 0x00ff_0000_0000_ff00 & 0xffff);
+        assert_eq!(nbd.by_piece(Piece::WN), 0x4200_0000_0000_0042 & 0xffff);
+        assert_eq!(nbd.by_piece(Piece::WB), 0x2400_0000_0000_0024 & 0xffff);
+        assert_eq!(nbd.by_piece(Piece::WR), 0x8100_0000_0000_0081 & 0xffff);
+        assert_eq!(nbd.by_piece(Piece::WQ), 0x0800_0000_0000_0008 & 0xffff);
+        assert_eq!(nbd.by_piece(Piece::WK), 0x1000_0000_0000_0010 & 0xffff);
     }
 }
