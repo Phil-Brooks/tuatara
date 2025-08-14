@@ -107,6 +107,13 @@ pub struct Board {
     pub by_col: [BitBoard; 2],
     pub occupied: BitBoard,
 }
+pub const ROOK_DELTAS: [i32; 4] = [8, 1, -8, -1];
+pub const BISHOP_DELTAS: [i32; 4] = [9, 7, -9, -7];
+pub const KING_DELTAS: [i32; 8] = [9, 8, 7, 1, -9, -8, -7, -1];
+pub const KNIGHT_DELTAS: [i32; 8] = [17, 15, 10, 6, -17, -15, -10, -6];
+pub const WHITE_PAWN_DELTAS: [i32; 2] = [7, 9];
+pub const BLACK_PAWN_DELTAS: [i32; 2] = [-7, -9];
+
 #[cfg(test)]
 mod tests {
     use crate::consts::*;
