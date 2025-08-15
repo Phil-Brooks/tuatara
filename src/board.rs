@@ -144,7 +144,7 @@ impl Board {
         let piece = piece.unwrap();
         let mask = bitboard::from_square(sq);
         self.by_piece[piece.piecetype().index()] &= !mask;
-        self.by_col[piece.colour().index()] &= !mask;
+        self.by_col[piece.col().index()] &= !mask;
         self.occupied &= !mask;
         Some(piece)
     }
@@ -156,14 +156,14 @@ impl Board {
         let piece = piece.unwrap();
         let mask = bitboard::from_square(sq);
         self.by_piece[piece.piecetype().index()] &= !mask;
-        self.by_col[piece.colour().index()] &= !mask;
+        self.by_col[piece.col().index()] &= !mask;
         self.occupied &= !mask;
     }
     pub fn set_piece_at(&mut self, sq: Square, piece: Piece) {
         self.discard_piece_at(sq);
         let mask = bitboard::from_square(sq);
         self.by_piece[piece.piecetype().index()] |= mask;
-        self.by_col[piece.colour().index()] |= mask;
+        self.by_col[piece.col().index()] |= mask;
         self.occupied |= mask;
     }
     pub fn set_new_piece_at(&mut self, sq: Square, piece: Piece) {
@@ -172,7 +172,7 @@ impl Board {
         }
         let mask = bitboard::from_square(sq);
         self.by_piece[piece.piecetype().index()] |= mask;
-        self.by_col[piece.colour().index()] |= mask;
+        self.by_col[piece.col().index()] |= mask;
         self.occupied |= mask;
     }
     pub const fn by_col(&self, col: Col) -> BitBoard {
@@ -182,7 +182,7 @@ impl Board {
         self.by_piece[piecetype.index()]
     }
     pub const fn by_piece(&self, piece: Piece) -> BitBoard {
-        self.by_piece[piece.piecetype().index()] & self.by_col[piece.colour().index()]
+        self.by_piece[piece.piecetype().index()] & self.by_col[piece.col().index()]
     }
 }
 

@@ -18,7 +18,7 @@ impl Piece {
             None
         }
     }
-    pub const fn colour(self) -> Col {
+    pub const fn col(self) -> Col {
         if (self as u8) < 6 {
             Col::White
         } else {
@@ -116,19 +116,19 @@ mod tests {
         assert_eq!(Piece::from_index(12), None);
     }
     #[test]
-    fn colour() {
-        assert_eq!(Piece::WP.colour(), Col::White);
-        assert_eq!(Piece::BP.colour(), Col::Black);
-        assert_eq!(Piece::WN.colour(), Col::White);
-        assert_eq!(Piece::BN.colour(), Col::Black);
-        assert_eq!(Piece::WB.colour(), Col::White);
-        assert_eq!(Piece::BB.colour(), Col::Black);
-        assert_eq!(Piece::WR.colour(), Col::White);
-        assert_eq!(Piece::BR.colour(), Col::Black);
-        assert_eq!(Piece::WQ.colour(), Col::White);
-        assert_eq!(Piece::BQ.colour(), Col::Black);
-        assert_eq!(Piece::WK.colour(), Col::White);
-        assert_eq!(Piece::BK.colour(), Col::Black);
+    fn col() {
+        assert_eq!(Piece::WP.col(), Col::White);
+        assert_eq!(Piece::BP.col(), Col::Black);
+        assert_eq!(Piece::WN.col(), Col::White);
+        assert_eq!(Piece::BN.col(), Col::Black);
+        assert_eq!(Piece::WB.col(), Col::White);
+        assert_eq!(Piece::BB.col(), Col::Black);
+        assert_eq!(Piece::WR.col(), Col::White);
+        assert_eq!(Piece::BR.col(), Col::Black);
+        assert_eq!(Piece::WQ.col(), Col::White);
+        assert_eq!(Piece::BQ.col(), Col::Black);
+        assert_eq!(Piece::WK.col(), Col::White);
+        assert_eq!(Piece::BK.col(), Col::Black);
     }
     #[test]
     fn piecetype() {
