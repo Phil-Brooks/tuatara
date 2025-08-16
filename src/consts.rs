@@ -101,7 +101,7 @@ pub enum Piece {
     WP, WN, WB, WR, WQ, WK,
     BP, BN, BB, BR, BQ, BK,
 }
-#[derive(Clone, Eq, PartialEq, Hash, Debug)]
+#[derive(Clone, Eq, PartialEq, Hash)]
 pub struct Board {
     pub by_piece: [BitBoard; 6],
     pub by_col: [BitBoard; 2],

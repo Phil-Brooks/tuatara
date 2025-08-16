@@ -13,12 +13,5 @@ use crate::consts::*;
 
 fn main() {
     let bd = Board::new();
-    let mut bb: BitBoard = bd.by_piece[PieceType::Pawn.index()];
-    println!("bb1:\n{}", bitboard::to_string(bb));
-    bb = bd.by_col[Col::Black.index()];
-    let bb2str = bitboard::to_string(bb);
-    println!("bb2:\n{}", bitboard::to_string(bb));
-    println!("bb2str:\n{}", bb2str);
-    bb = bd.occupied;
-    println!("bb3:\n{}", bitboard::to_string(bb));
+    println!("Initial board state:\n{:#?}", bd);
 }

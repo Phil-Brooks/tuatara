@@ -1,3 +1,6 @@
+use std::fmt;
+
+use crate::attacks;
 use crate::bitboard;
 use crate::consts::*;
 
@@ -184,10 +187,45 @@ impl Board {
     pub const fn by_piece(&self, piece: Piece) -> BitBoard {
         self.by_piece[piece.piecetype().index()] & self.by_col[piece.col().index()]
     }
+    pub fn attacks_from(&self, sq: Square) -> BitBoard {
+        let piece = self.piece_at(sq);
+        if piece.is_none() {
+            return BB_EMPTY;
+        }
+        let piece = piece.unwrap();
+        attacks::attacks(sq, piece, self.occupied)
+    }
+    pub fn atacks_to(&self, sq: Square, attacker: Col, occupied: BitBoard) -> BitBoard {
+        self.by_col(attacker)
+            & ((attacks::rook_attacks(sq, occupied) & self.rooks_and_queens())
+                | (attacks::bishop_attacks(sq, occupied) & self.bishops_and_queens())
+                | (attacks::knight_attacks(sq) & self.by_piecetype(PieceType::Knight))
+                | (attacks::king_attacks(sq) & self.by_piecetype(PieceType::King))
+                | (attacks::pawn_attacks(attacker.flip(), sq) & self.by_piecetype(PieceType::Pawn)))
+    }
+}
+
+impl fmt::Debug for Board {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for rank in Rank::all().rev() {
+            for file in File::all() {
+                let square = Square::from_rank_file(rank, file);
+                let piece = self.piece_at(square);
+                if let Some(piece) = piece {
+                    write!(f, "{} ", piece)?;
+                } else {
+                    write!(f, ". ")?;
+                }
+            }
+            writeln!(f)?;
+        }
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::attacks;
     use crate::bitboard;
     use crate::consts::*;
     #[test]
@@ -443,5 +481,40 @@ mod tests {
         assert_eq!(nbd.by_piece(Piece::WR), 0x8100_0000_0000_0081 & 0xffff);
         assert_eq!(nbd.by_piece(Piece::WQ), 0x0800_0000_0000_0008 & 0xffff);
         assert_eq!(nbd.by_piece(Piece::WK), 0x1000_0000_0000_0010 & 0xffff);
+    }
+    #[test]
+    fn attacks_from() {
+        let nbd = Board::new();
+        assert_eq!(
+            nbd.attacks_from(Square::A1),
+            attacks::attacks(Square::A1, Piece::WR, nbd.occupied)
+        );
+        assert_eq!(
+            nbd.attacks_from(Square::E8),
+            attacks::attacks(Square::E8, Piece::BK, nbd.occupied)
+        );
+        assert_eq!(
+            nbd.attacks_from(Square::D2),
+            attacks::attacks(Square::D2, Piece::WP, nbd.occupied)
+        );
+        assert_eq!(
+            nbd.attacks_from(Square::H8),
+            attacks::attacks(Square::H8, Piece::BR, nbd.occupied)
+        );
+        assert_eq!(nbd.attacks_from(Square::A5), BB_EMPTY);
+    }
+    #[test]
+    fn atacks_to() {
+        let nbd = Board::new();
+        assert_eq!(nbd.atacks_to(Square::A1, Col::White, nbd.occupied), 0);
+        assert_eq!(nbd.atacks_to(Square::E2, Col::White, nbd.occupied), 120);
+        assert_eq!(
+            nbd.atacks_to(Square::B8, Col::Black, nbd.occupied),
+            72057594037927936
+        );
+        assert_eq!(
+            nbd.atacks_to(Square::F6, Col::Black, nbd.occupied),
+            4634204016564240384
+        );
     }
 }
